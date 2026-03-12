@@ -143,6 +143,14 @@ wireguard-mesh-lab/
 docker compose down
 ```
 
+### Resultados e Impacto
+
+- **Simulação realista de redes corporativas** — Reproduz cenários multi-site para validação antes de ir para produção
+- **Latência mínima** — Mesh full permite comunicação direta entre nodes sem passar por hub central
+- **Segurança enterprise** — Criptografia WireGuard de última geração em todas as conexões
+- **Deploy automatizado** — Geração automática de chaves e configurações reduz setup de horas para minutos
+- **Custo zero de licenciamento** — Alternativa open-source a VPNs comerciais como Cisco ou Palo Alto
+
 ## Licenca
 
 MIT
