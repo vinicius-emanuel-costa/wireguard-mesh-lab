@@ -1,0 +1,104 @@
+# ============================================
+#  WIREGUARD MESH LAB - 5 Nodes Full Mesh
+#  Rede isolada: só os nodes conversam entre si
+# ============================================
+#
+#  Topologia:
+#    node-a (10.10.0.1) ←→ node-b (10.10.0.2)
+#    node-a (10.10.0.1) ←→ node-c (10.10.0.3)
+#    node-a (10.10.0.1) ←→ node-d (10.10.0.4)
+#    node-a (10.10.0.1) ←→ node-e (10.10.0.5)
+#    ... todos com todos (full mesh)
+#
+#  IPs Docker (172.20.0.x) = simula IP público (como se fosse internet)
+#  IPs Mesh (10.10.0.x)    = rede privada WireGuard (túnel criptografado)
+
+services:
+
+  node-a:
+    build: .
+    container_name: node-a
+    hostname: node-a
+    privileged: true                    # necessário pro WireGuard criar interfaces
+    volumes:
+      - ./nodes/node-a/wg0.conf:/etc/wireguard/wg0.conf:ro
+    networks:
+      mesh-lab:
+        ipv4_address: 172.20.0.10      # IP "público" simulado
+    cap_add:
+      - NET_ADMIN                      # permissão pra criar interfaces de rede
+      - SYS_MODULE                     # permissão pra carregar módulos do kernel
+    sysctls:
+      - net.ipv4.ip_forward=1          # permitir encaminhar pacotes (roteamento)
+
+  node-b:
+    build: .
+    container_name: node-b
+    hostname: node-b
+    privileged: true
+    volumes:
+      - ./nodes/node-b/wg0.conf:/etc/wireguard/wg0.conf:ro
+    networks:
+      mesh-lab:
+        ipv4_address: 172.20.0.20
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    sysctls:
+      - net.ipv4.ip_forward=1
+
+  node-c:
+    build: .
+    container_name: node-c
+    hostname: node-c
+    privileged: true
+    volumes:
+      - ./nodes/node-c/wg0.conf:/etc/wireguard/wg0.conf:ro
+    networks:
+      mesh-lab:
+        ipv4_address: 172.20.0.30
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    sysctls:
+      - net.ipv4.ip_forward=1
+
+  node-d:
+    build: .
+    container_name: node-d
+    hostname: node-d
+    privileged: true
+    volumes:
+      - ./nodes/node-d/wg0.conf:/etc/wireguard/wg0.conf:ro
+    networks:
+      mesh-lab:
+        ipv4_address: 172.20.0.40
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    sysctls:
+      - net.ipv4.ip_forward=1
+
+  node-e:
+    build: .
+    container_name: node-e
+    hostname: node-e
+    privileged: true
+    volumes:
+      - ./nodes/node-e/wg0.conf:/etc/wireguard/wg0.conf:ro
+    networks:
+      mesh-lab:
+        ipv4_address: 172.20.0.50
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    sysctls:
+      - net.ipv4.ip_forward=1
+
+# Rede isolada — só os containers nela se enxergam
+networks:
+  mesh-lab:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24       # range "público" dos containers
